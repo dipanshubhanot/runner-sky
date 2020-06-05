@@ -5,24 +5,71 @@
     <meta name="google-signin-client_secret" content="t2OyLEin02Yh35x6vFsFMtS8">
 
   <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://apis.google.com/js/api:client.js"></script>
+
   
   <!-- Add the entire Firebase JavaScript SDK -->
   <script src="/__/firebase/7.15.0/firebase.js"></script>
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
-
+ 
 
   </head>
   <body>
     
       <div class="g-signin2" data-onsuccess="onSignIn"></div>
-      <script>function onSignIn(googleUser) {
-        var profile = googleUser.getBasicProfile();
-        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        console.log('Name: ' + profile.getName());
-        console.log('Image URL: ' + profile.getImageUrl());
-        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    <script>
+    
+    function onSignIn(googleUser) {
+
+      gapi.load('auth2', function() {
+      gapi.auth2.init({
+        client_id: '1054553981553-eqngoelh0gf6cje722to2qhh77p891vg.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin', /** Default value **/
+        scope: 'profile'});
+  })
+
+        // Initialising the GoogleAuth  Object
+        GoogleAuth = gapi.auth2.init({client_id: '1054553981553-eqngoelh0gf6cje722to2qhh77p891vg.apps.googleusercontent.com'});
+
+        googleUser = GoogleAuth.currentUser.get();
+        console.log('ID: ' + googleUser.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Email: ' + googleUser.getBasicProfile().getEmail()); // This is null if the 'email' scope is not present.
       }
     </script>
+
+
+  <a href="#" onclick="signOut();">Sign out</a> 
+  
+  <script>
+      function signOut() {
+      var author2 = gapi.auth2.getAuthInstance();
+      author2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+    }</script>
+  
+  <a href="#" onclick="sendFirebaseRequest();">Send Request for Firebase Rules testing </a>
+  <script>
+      function sendFirebaseRequest() {
+        
+        
+        var options = new gapi.auth2.SigninOptionsBuilder(
+          {'scope': 'https://www.googleapis.com/auth/firebase.readonly'});
+        console.log('seding requests!');
+
+        newGoogleUser = GoogleAuth.currentUser.get(); 
+        newGoogleUser.grant(options).then(
+        function(success){
+          console.log('Yahooooo!');
+          console.log(JSON.stringify({message: "success", value: success}));
+        },
+        function(fail){
+          alert(JSON.stringify({message: "fail", value: fail}));
+        });
+      }
+    </script>
+
+
   </body>
 </html>

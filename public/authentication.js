@@ -1,59 +1,30 @@
+function onSignIn(googleUser) {
+  googleUser = gapi.auth2.init({
+  client_id: '1054553981553-eqngoelh0gf6cje722to2qhh77p891vg.apps.googleusercontent.com',
+  cookiepolicy: 'single_host_origin', /** Default value **/
+  scope: 'profile'});
+  console.log('ID: ' + googleUser.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Email: ' + googleUser.getEmail()); // This is null if the 'email' scope is not present.
+}
 
-
-'use strict';
-
-// [START gae_python37_auth_javascript]
-window.addEventListener('load', function () {
-  document.getElementById('sign-out').onclick = function () {
-    firebase.auth().signOut();
-  };
-
-  // FirebaseUI config.
-  var uiConfig = {
-    signInSuccessUrl: '/',
-    signInOptions: [
-      // Comment out any lines corresponding to providers you did not check in
-      // the Firebase console.
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      //firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-      //firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-      //firebase.auth.GithubAuthProvider.PROVIDER_ID,
-      //firebase.auth.PhoneAuthProvider.PROVIDER_ID
-
-    ],
-    // Terms of service url.
-    tosUrl: '<your-tos-url>'
-  };
-
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      // User is signed in, so display the "sign out" button and login info.
-      document.getElementById('sign-out').hidden = false;
-      document.getElementById('login-info').hidden = false;
-      console.log(`Signed in as ${user.displayName} (${user.email})`);
-      user.getIdToken().then(function (token) {
-        // Add the token to the browser's cookies. The server will then be
-        // able to verify the token against the API.
-        // SECURITY NOTE: As cookies can easily be modified, only put the
-        // token (which is verified server-side) in a cookie; do not add other
-        // user information.
-        document.cookie = "token=" + token;
-      });
-    } else {
-      // User is signed out.
-      // Initialize the FirebaseUI Widget using Firebase.
-      var ui = new firebaseui.auth.AuthUI(firebase.auth());
-      // Show the Firebase login button.
-      ui.start('#firebaseui-auth-container', uiConfig);
-      // Update the login state indicators.
-      document.getElementById('sign-out').hidden = true;
-      document.getElementById('login-info').hidden = true;
-      // Clear the token cookie.
-      document.cookie = "token=";
-    }
-  }, function (error) {
-    console.log(error);
-    alert('Unable to log in: ' + error)
-  });
+function signOut() {
+  var author2 = gapi.auth2.getAuthInstance();
+  author2.signOut().then(function () {
+  console.log('User signed out.');
 });
+}
+
+function sendFirebaseRequest() {
+  var options = new gapi.auth2.SigninOptionsBuilder(
+    {'scope': 'firebase https://www.googleapis.com/auth/firebase.readonly'});
+  console.log('seding requests!');
+  newGoogleUser = auth2.currentUser.get(); 
+  newGoogleUser.grant(options).then(
+  function(success){
+    console.log('Yahooooo!');
+    console.log(JSON.stringify({message: "success", value: success}));
+  },
+  function(fail){
+    alert(JSON.stringify({message: "fail", value: fail}));
+  });
+}
