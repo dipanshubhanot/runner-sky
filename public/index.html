@@ -5,14 +5,66 @@
     <meta name="google-signin-client_secret" content="t2OyLEin02Yh35x6vFsFMtS8">
 
   <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <script src="https://apis.google.com/js/api:client.js"></script>
 
-  
   <!-- Add the entire Firebase JavaScript SDK -->
   <script src="/__/firebase/7.15.0/firebase.js"></script>
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
+    
+    <script>
+     var API_KEY = "AIzaSyAqdZBsoU3aI1QCDFMKX6jdyBSl-OCxIh4";
+     var CLIENT_ID = '1054553981553-eqngoelh0gf6cje722to2qhh77p891vg.apps.googleusercontent.com';
+     var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+     var SCOPES = 'profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
+     
+     function initClient(){
+          window.gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES
+        })
+      }   
+      
+      function handleClientLoad() {
+        window.gapi.load('client:auth2', _ => {window.gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES
+        })});
+}
+
+
+
+      var event = {
+  'summary': 'Running Session',
+  'location': 'Flagstaff  Gardens',
+  'description': 'Running time scheduled by RunnersSky',
+  'start': {
+    'dateTime': '2020-06-7T11:00:00-00:00:00',
+    'timeZone': 'Australia/Melbourne'
+  },
+  'end': {
+    'dateTime': '2020-06-7T18:00:00-00:00:00',
+    'timeZone': 'Australia/Melbourne'
+  },
  
+  'reminders': {
+    'useDefault': false,
+    'overrides': [
+      {'method': 'email', 'minutes': 24 * 60},
+      {'method': 'popup', 'minutes': 10}
+    ]
+  }
+};
+
+    </script>
+
+<script src="https://apis.google.com/js/client.js?onload" type="application/javascript"></script>
+
+<script async defer src="https://apis.google.com/js/api.js" 
+onload="this.onload=function(){};handleClientLoad()"></script>
 
   </head>
   <body>
@@ -22,15 +74,8 @@
     
     function onSignIn(googleUser) {
 
-      gapi.load('auth2', function() {
-      gapi.auth2.init({
-        client_id: '1054553981553-eqngoelh0gf6cje722to2qhh77p891vg.apps.googleusercontent.com',
-        cookiepolicy: 'single_host_origin', /** Default value **/
-        scope: 'profile'});
-  })
-
         // Initialising the GoogleAuth  Object
-        GoogleAuth = gapi.auth2.init({client_id: '1054553981553-eqngoelh0gf6cje722to2qhh77p891vg.apps.googleusercontent.com'});
+        GoogleAuth = gapi.auth2.init({client_id: CLIENT_ID});
 
         googleUser = GoogleAuth.currentUser.get();
         console.log('ID: ' + googleUser.getId()); // Do not send to your backend! Use an ID token instead.
@@ -39,14 +84,29 @@
     </script>
 
 
-  <a href="#" onclick="signOut();">Sign out</a> 
-  
+
+<p align ="center">
+  <a href="#" onclick="addEvent()">Add Event!</a>
   <script>
-      function signOut() {
-      var author2 = gapi.auth2.getAuthInstance();
-      author2.signOut().then(function () {
-      console.log('User signed out.');
-    });
+  function addEvent(){
+    console.log("trying to add  event!");
+    var request = gapi.client.calendar.events.insert({
+    'calendarId': 'primary',
+    'resource': event
+  });
+    request.execute(function(event) {
+    console.log("Succesfully added  event!");
+  });}
+    </script>
+  </p>
+    <a href="#" onclick="signOut();">Sign out</a> 
+    
+    <script>
+        function signOut() {
+        var author2 = gapi.auth2.getAuthInstance();
+        author2.signOut().then(function () {
+        console.log('User signed out.');
+      });
     }</script>
   
   <a href="#" onclick="sendFirebaseRequest();">Send Request for Firebase Rules testing </a>
@@ -55,7 +115,7 @@
         
         
         var options = new gapi.auth2.SigninOptionsBuilder(
-          {'scope': 'https://www.googleapis.com/auth/firebase.readonly'});
+          {'scope': 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events'});
         console.log('seding requests!');
 
         newGoogleUser = GoogleAuth.currentUser.get(); 
